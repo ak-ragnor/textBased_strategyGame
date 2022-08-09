@@ -12,7 +12,7 @@ import { villageList } from './village.js';
 
 const sleep = (ms = 2000) => new Promise((r) => setTimeout(r, ms));
 const sleep1 = (ms = 500) => new Promise((r) => setTimeout(r, ms));
-const sleep2 = (ms = 4000) => new Promise((r) => setTimeout(r, ms));
+const sleep2 = (ms = 5000) => new Promise((r) => setTimeout(r, ms));
 
 let villageName;
 let condition = true;
@@ -68,6 +68,8 @@ console.log(`
     dont get ${chalk.bgRed('killed')}
     think wisely be the ${chalk.bgGreen('king')}...
   `);
+
+ 
 }
 
 async function intro(){
@@ -88,7 +90,7 @@ async function intro(){
     let the new journey ${chalk.blue('begin')}...
   `);
 
-  await sleep();
+  await sleep2();
 
 }
 
@@ -106,9 +108,11 @@ async function header(){
 await sleep1();
 
 console.log('gold:'+chalk.yellow('%s'), gold);
+console.log('food:'+chalk.red('%s'), food);
 console.log('population:'+chalk.green('%s'), population);
 console.log('day:'+chalk.blue('%s'), day);
 console.log('soldiers:'+chalk.red('%s'), soldier);
+console.log('popularity:'+chalk.blue('%s'), popularity);
 }
 
 async function theGame() {
@@ -229,6 +233,8 @@ async function exit(){
     console.log('You played ' + chalk.cyan(day) + '....' );
     console.log(chalk.cyan(population) + 'people miss you... ' );
     console.log('Meet you in valhala ' + chalk.cyan(posting) + '....' );
+    await sleep2();
+    condition = false;
   }else{
     await theGame();
   }
@@ -337,11 +343,16 @@ async function kingdom(){
     message: 'choose what to do\n',
     choices: [
       'kingdoms and holdings',
-      'attack'  
+      'attack',
+      'Go back'  
     ],
   });
+  if( answers.sol == 'Go back'){
+    await theGame();
+  }
   if( answers.sol == 'kingdoms and holdings'){
     kingdomlist.forEach(element => console.log(element.name + '(' + element.population +')' +' : ' + element.posting));
+    await sleep2();
     await kingdom();
   }
   if( answers.sol == 'attack'){
@@ -364,11 +375,11 @@ async function kingdom(){
       });
       let defender = parseInt(king.kingdom);
       for(const element of holdings){
-          if(element == kingdomcheck[defender - 1].name){
+          if(element == kingdomlist[defender - 1].name){
             kingdomcheck = true;
           }
       }
-      if(kingdomcheck == false){
+      if(kingdomcheck == true){
          console.log(chalk.yellow('This village already belongs to your kingdom'));
          await sleep();
          await kingdom();
@@ -383,7 +394,8 @@ async function kingdom(){
         kingdomlist[defender -1].soldier -= (kingdomlist[defender -1].soldier)/5;
         popularity += 5;
         day += 3;
-           
+        
+        kingdomcheck = false;
         console.log('You '+chalk.green('Won') + ' the battle');
         await sleep();
       }else{
@@ -392,7 +404,8 @@ async function kingdom(){
         soldier = soldier - (soldier/5);
         kingdomlist[defender -1].soldier -= (kingdomlist[defender -1].soldier)/5;
         day += 3;
-
+        
+        kingdomcheck = false;
         console.log('You '+chalk.red('Lost') + ' the battle');
         await sleep();
       } 
@@ -495,6 +508,7 @@ async function kingdom(){
     if(vopt.vill == 'send a spy'){
       day++;
       raidDays++;
+      console.log('\n');
 
       console.log('soldiers:'+villageList[i-1].battle+'     gold:'+villageList[i-1].gold);
       console.log('\n');
@@ -513,7 +527,7 @@ async function kingdom(){
       if(vopt1.vill1 == 'Lets raid'){
            day +=  parseInt(villageList[i-1].day);
            raidDays += parseInt(villageList[i-1].day);
-           let ratio = parseInt(soldier%villageList[i-1].battle) == 0 ? true : false;
+           let ratio = parseInt(soldier%villageList[i-1].battle) < 1 ? true : false;
            if(ratio == true){
             soldier = soldier - parseInt(soldier%villageList[i-1].battle);
             gold += villageList[i-1].gold;
@@ -544,7 +558,7 @@ async function kingdom(){
     }else{
       day +=  parseInt(villageList[i-1].day);
       raidDays += parseInt(villageList[i-1].day);
-      let ratio = parseInt(soldier%villageList[i-1].battle) == 0 ? true : false;
+      let ratio = parseInt(soldier%villageList[i-1].battle) < 1 ? true : false;
       if(ratio == true){
        soldier = soldier - parseInt(soldier%villageList[i-1].battle);
        gold += parseInt(villageList[i-1].gold);
